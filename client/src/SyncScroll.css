@@ -17,6 +17,7 @@ body, html, #root {
     top: 85px;
     left: 50px;
     width: 300px;
+    max-height: 80vh;
     bottom: 50;
     background-color: white;
     padding: 20px 0;
@@ -58,12 +59,30 @@ body, html, #root {
     padding: 20px;
     flex: 1;
   }
+
+  .wrapper {
+    height: calc(100vh - 200px);
+  }
   
+  .wrapper h2 {
+    background-color: #090675;
+    padding: 23px 30px 17px !important;
+    color: #fff !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: 45px !important;
+    margin: 0 !important;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+  }
   .problem {
     /* padding: 20px; */
     background: white;
     margin-bottom: 30px;
     border-radius: 20px;
+    padding-bottom: 20px;
   }
 
   .problem h2 {
@@ -90,38 +109,45 @@ body, html, #root {
     padding: 20px 30px;
   }
 
-  /* Custom heights for different problems */
-  /* #problem1 {
-    height: 70vh;
+  .btn-group {
+    position: fixed;
+    bottom: 85px;
+    left: 65px;
   }
   
-  #problem2 {
-    height: 120vh;
+  .answer-explanation {
+    padding: 30px 40px;
+    border-radius: 6px;
+    border: 2px solid #00cf2f;
+    margin: 20px 20px;
   }
-  
-  #problem3 {
-    height: 90vh;
+
+  .answer-explanation h4 {
+    color: #000 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: 28px !important;
+    text-align: left;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin: 0 0 15px !important;
   }
-  #problem4 {
-    height: 70vh;
+
+  .answer-explanation h4 img {
+    max-width: 100%;
+    height: auto;
+    margin-right: 20px;
   }
-  
-  #problem5 {
-    height: 120vh;
+
+  .answer-explanation p {
+    font-size: 20px;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: 28px;
+    word-break: break-word;
   }
-  
-  #problem6 {
-    height: 90vh;
-  }
-  #problem7 {
-    height: 70vh;
-  }
-  
-  #problem8 {
-    height: 120vh;
-  }
-  
-  #problem9 {
-    height: 90vh;
-  } */
-  
