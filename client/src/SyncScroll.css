@@ -80,8 +80,18 @@ body, html, #root {
     border-top-left-radius: 20px;
   }
   
+  .prob-content {
+    font-size: 30px;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: normal;
+    line-height: 40px;
+    word-break: break-word;
+    padding: 20px 30px;
+  }
+
   /* Custom heights for different problems */
-  #problem1 {
+  /* #problem1 {
     height: 70vh;
   }
   
@@ -113,5 +123,5 @@ body, html, #root {
   
   #problem9 {
     height: 90vh;
-  }
+  } */
   

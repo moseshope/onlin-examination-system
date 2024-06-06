@@ -1,57 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, Layout } from 'antd';
+import { Menu, Layout, Radio, Col, Row } from 'antd';
 import './SyncScroll.css';
 import logo from './logo.jpeg';
 import axios from "axios";
 
 const { Header, Content, Footer } = Layout;
 
-
 const getProblems = async (limit) => {
-  await axios.post('http://localhost:5000/api/problems/getProblems', {limit: limit})
-  .then(res => {
-    console.log(res);
-    return res;
-  })
-  .catch(err => {
-    console.log(err);
-  })
+  try {
+    const res = await axios.post('http://localhost:5000/api/problems/getProblems', { limit });
+    return res.data;
+  } catch (err) {
+    console.log('Error fetching problems:', err);
+    return [];
+  }
 }
 
 const App = () => {
   const limit = 7;
+  const [problems, setProblems] = useState([]);
   const [activeProblem, setActiveProblem] = useState('');
-  const examProblems = getProblems(limit);
-  const problems = [
-    { id: 'problem1', label: 'Problem 1' },
-    { id: 'problem2', label: 'Problem 2' },
-    { id: 'problem3', label: 'Problem 3' },
-    { id: 'problem4', label: 'Problem 4' },
-    { id: 'problem5', label: 'Problem 5' },
-    { id: 'problem6', label: 'Problem 6' },
-    { id: 'problem7', label: 'Problem 7' },
-    { id: 'problem8', label: 'Problem 8' },
-    { id: 'problem9', label: 'Problem 9' },
-  ];
+  const problemRefs = useRef({});
+  const [examProblems, setExamProblems] = useState([]);
+  useEffect(() => {
+    const fetchProblems = async () => {
+      const examProblemsResponse = await getProblems(limit);
+      setExamProblems(examProblemsResponse.problems);
+    };
 
-  // Initialize refs statically in the component scope
-  const problemRefs = {
-    problem1: useRef(null),
-    problem2: useRef(null),
-    problem3: useRef(null),
-    problem4: useRef(null),
-    problem5: useRef(null),
-    problem6: useRef(null),
-    problem7: useRef(null),
-    problem8: useRef(null),
-    problem9: useRef(null),
-  };
+    fetchProblems();
+  }, [limit]);
+
+  useEffect(() => {
+    if (Array.isArray(examProblems)) {  // Ensure examProblems is an array
+      setProblems(examProblems.map((_, index) => ({
+        id: `problem${index + 1}`,
+        label: `Question ${index + 1}`
+      })));
+    } else {
+      console.error('Expected array but got:', examProblems);
+    }
+  },[examProblems]);
 
   useEffect(() => {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.53,
+      threshold: 0.8,
     };
 
     const observerCallback = (entries) => {
@@ -65,19 +60,19 @@ const App = () => {
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
     problems.forEach((problem) => {
-      if (problemRefs[problem.id].current) {
-        observer.observe(problemRefs[problem.id].current);
+      if (problemRefs.current[problem.id]) {
+        observer.observe(problemRefs.current[problem.id]);
       }
     });
 
     return () => {
       problems.forEach((problem) => {
-        if (problemRefs[problem.id].current) {
-          observer.unobserve(problemRefs[problem.id].current);
+        if (problemRefs.current[problem.id]) {
+          observer.unobserve(problemRefs.current[problem.id]);
         }
       });
     };
-  }, [problems, problemRefs]);
+  }, [problems]);
 
   const handleMenuClick = (id) => {
     document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
@@ -86,9 +81,9 @@ const App = () => {
   return (
     <>
       <Header style={{ display: 'flex', alignItems: 'center' }}>
-        <img src={logo} width={80}></img>
+        <img src={logo} width={80} alt="Logo" />
       </Header>
-      <div className=' px-5'>
+      <div className='px-5'>
         <div className="wrap">
           <nav className="side-menu">
             <ul>
@@ -98,22 +93,37 @@ const App = () => {
                   className={activeProblem === problem.id ? 'active' : ''}
                 >
                   <button onClick={() => handleMenuClick(problem.id)}>
-                {problem.label}
-              </button>
+                    {problem.label}
+                  </button>
                 </li>
               ))}
             </ul>
           </nav>
           <div className="content">
-            {problems.map((problem) => (
+            {problems.map((problem, index) => (
               <div
                 key={problem.id}
                 id={problem.id}
-                ref={problemRefs[problem.id]}
+                ref={(el) => problemRefs.current[problem.id] = el}
                 className="problem"
               >
                 <h2>{problem.label}</h2>
-                <p>Content for {problem.label}</p>
+                <p className='prob-content text-blue-700'>{examProblems[index].prob_content}</p>
+                <Radio.Group className=' w-full p-5' onChange={(checkedValue) => {
+                  setExamProblems(prev => {
+                    let tmp = [...prev];
+                    tmp[index].result = checkedValue.target.value;
+                    return tmp;
+                  })
+                }}>
+                  <Row>
+                {examProblems[index].avail_answers.map((availAnswer, i) => (
+                      <Col span={24} className='w-full'>
+                        <Radio value={i} className=' select-answer w-full text-[25px] my-[20px] font-normal tracking-wide'>{availAnswer}</Radio>
+                      </Col>
+                ))}
+                </Row>
+                </Radio.Group>
               </div>
             ))}
           </div>
